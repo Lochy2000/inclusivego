@@ -1,5 +1,5 @@
-<img width="306" height="70" alt="image" src="https://github.com/user-attachments/assets/4461ca06-1419-484b-8018-1f34a99483c5" />
 
+<img width="74" height="74" alt="image" src="https://github.com/user-attachments/assets/75c08d6c-34e7-4ee1-9531-88ac80ab57b9" />
 # InclusiveGO
 
 > Mapping a world without barriers - An accessible route finder application
