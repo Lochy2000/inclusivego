@@ -1,3 +1,5 @@
+<img width="306" height="70" alt="image" src="https://github.com/user-attachments/assets/4461ca06-1419-484b-8018-1f34a99483c5" />
+
 # InclusiveGO
 
 > Mapping a world without barriers - An accessible route finder application
