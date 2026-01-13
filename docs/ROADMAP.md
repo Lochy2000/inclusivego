@@ -26,7 +26,7 @@ This roadmap outlines the planned features and improvements for InclusiveGO, org
 **Focus**: Make the application fully functional with working features
 
 ### Search & Filtering
-- [ ] **Implement functional search** - Filter routes by origin/destination
+- ✅ **Implement functional search** - Filter routes by origin/destination
 - [ ] **Active requirement filtering** - Filter routes based on selected accessibility needs
 - [ ] **Route sorting** - Sort by accessibility score, duration, distance
 - [ ] **Advanced filters** - Time of day, route type, specific features
