@@ -3,11 +3,12 @@
 import React from 'react';
 import { SearchBar } from './SearchBar';
 import { RequirementGrid } from '@/features/requirements';
-import { RouteList } from '@/features/routes';
+import { RouteList, RouteSortDropdown } from '@/features/routes';
 import { useSearch } from '../hooks/useSearch';
 import { useRequirements } from '@/features/requirements';
 import { useRoutes } from '@/features/routes';
 import { useRouteFilter } from '@/features/routes/hooks/useRouteFilter';
+import { useRouteSort } from '@/features/routes/hooks/useRouteSort';
 
 export function SearchSidebar() {
   const { searchQuery, inputValue, updateSearch } = useSearch();
@@ -15,8 +16,16 @@ export function SearchSidebar() {
   const { routes, selectedRoute, selectRoute } = useRoutes();
 
   const filteredRoutes = useRouteFilter(routes, searchQuery, activeRequirements);
-  
+  const {
+    sortedRoutes,
+    sortField,
+    sortDirection,
+    setSortField,
+    toggleDirection,
+  } = useRouteSort(filteredRoutes);
+
   const hasActiveFilters = activeRequirements.length > 0 || searchQuery.trim().length > 0;
+  const hasRoutes = filteredRoutes.length > 0;
 
   return (
     <aside className="lg:col-span-4 border-r-4 border-black p-6 bg-white overflow-y-auto">
@@ -34,8 +43,18 @@ export function SearchSidebar() {
         <RequirementGrid />
       </div>
 
+      <div className="mb-4">
+        <RouteSortDropdown
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onFieldChange={setSortField}
+          onDirectionToggle={toggleDirection}
+          disabled={!hasRoutes}
+        />
+      </div>
+
       <RouteList
-        routes={filteredRoutes}
+        routes={sortedRoutes}
         selectedRouteId={selectedRoute?.id ?? null}
         onRouteSelect={selectRoute}
       />
