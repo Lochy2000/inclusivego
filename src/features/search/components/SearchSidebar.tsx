@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SearchBar } from './SearchBar';
+import { SearchAutocomplete } from './SearchAutocomplete';
 import { RequirementGrid } from '@/features/requirements';
 import { RouteList, RouteSortDropdown } from '@/features/routes';
 import { useSearch } from '../hooks/useSearch';
@@ -29,7 +29,7 @@ export function SearchSidebar() {
 
   return (
     <aside className="lg:col-span-4 border-r-4 border-black p-6 bg-white overflow-y-auto">
-      <SearchBar value={inputValue} onChange={updateSearch} />
+      <SearchAutocomplete value={inputValue} onChange={updateSearch} routes={routes} />
 
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
