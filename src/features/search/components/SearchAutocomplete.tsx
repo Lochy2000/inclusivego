@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useAutocomplete } from '../hooks/useAutocomplete';
+import { useSearchHistory } from '../hooks/useSearchHistory';
+import { SearchHistory } from './SearchHistory';
 import type { Route } from '@/types';
 
 interface SearchAutocompleteProps {
@@ -20,6 +22,7 @@ export function SearchAutocomplete({
 }: SearchAutocompleteProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const {
     suggestions,
@@ -31,11 +34,22 @@ export function SearchAutocomplete({
     handleKeyDown
   } = useAutocomplete({ routes, inputValue: value });
 
-  // Handle click outside to close dropdown
+  const {
+    recentSearches,
+    addToHistory,
+    clearHistory,
+    removeFromHistory
+  } = useSearchHistory();
+
+  // Show history when input is empty, focused, and has history items
+  const showHistory = value.trim() === '' && isFocused && recentSearches.length > 0 && !isOpen;
+
+  // Handle click outside to close dropdown and unfocus
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         closeSuggestions();
+        setIsFocused(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -47,6 +61,11 @@ export function SearchAutocomplete({
     const selected = handleKeyDown(e);
     if (selected) {
       onChange(selected);
+      addToHistory(selected);
+    }
+    // Handle Enter when no autocomplete suggestion is highlighted
+    if (e.key === 'Enter' && highlightedIndex < 0 && value.trim()) {
+      addToHistory(value.trim());
     }
   };
 
@@ -54,7 +73,15 @@ export function SearchAutocomplete({
   const onSuggestionClick = (suggestion: string) => {
     onChange(suggestion);
     selectSuggestion(suggestion);
+    addToHistory(suggestion);
     inputRef.current?.focus();
+  };
+
+  // Handle recent search click
+  const onRecentSearchClick = (query: string) => {
+    onChange(query);
+    inputRef.current?.focus();
+    setIsFocused(false);
   };
 
   // Generate unique IDs for accessibility
@@ -79,8 +106,9 @@ export function SearchAutocomplete({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onFocus={() => setIsFocused(true)}
           role="combobox"
-          aria-expanded={isOpen}
+          aria-expanded={isOpen || showHistory}
           aria-haspopup="listbox"
           aria-controls={listboxId}
           aria-activedescendant={highlightedIndex >= 0 ? getOptionId(highlightedIndex) : undefined}
@@ -117,6 +145,15 @@ export function SearchAutocomplete({
             ))}
           </ul>
         )}
+
+        {/* Search History Dropdown (shown when input is empty and focused) */}
+        <SearchHistory
+          recentSearches={recentSearches}
+          onSelectSearch={onRecentSearchClick}
+          onRemoveSearch={removeFromHistory}
+          onClearHistory={clearHistory}
+          isVisible={showHistory}
+        />
       </div>
     </div>
   );
