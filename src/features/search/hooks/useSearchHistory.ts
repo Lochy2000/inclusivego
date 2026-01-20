@@ -22,7 +22,11 @@ export function useSearchHistory(): UseSearchHistoryReturn {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            setRecentSearches(parsed);
+            // Sanitize: filter to non-empty strings and cap to MAX_HISTORY_ITEMS
+            const sanitized = parsed
+              .filter((item): item is string => typeof item === 'string' && item.trim() !== '')
+              .slice(0, MAX_HISTORY_ITEMS);
+            setRecentSearches(sanitized);
           }
         }
       } catch (error) {

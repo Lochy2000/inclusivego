@@ -81,7 +81,8 @@ export function SearchAutocomplete({
   const onRecentSearchClick = (query: string) => {
     onChange(query);
     inputRef.current?.focus();
-    setIsFocused(false);
+    // Keep focus state true since we're focusing the input
+    setIsFocused(true);
   };
 
   // Generate unique IDs for accessibility
