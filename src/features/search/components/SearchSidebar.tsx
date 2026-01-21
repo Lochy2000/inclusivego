@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { GitCompare } from 'lucide-react';
 import { SearchAutocomplete } from './SearchAutocomplete';
 import { RequirementGrid } from '@/features/requirements';
-import { RouteList, RouteSortDropdown } from '@/features/routes';
+import { RouteList, RouteSortDropdown, RouteComparison } from '@/features/routes';
 import { useSearch } from '../hooks/useSearch';
 import { useRequirements } from '@/features/requirements';
 import { useRoutes } from '@/features/routes';
 import { useRouteFilter } from '@/features/routes/hooks/useRouteFilter';
 import { useRouteSort } from '@/features/routes/hooks/useRouteSort';
+import { useRouteComparison } from '@/features/routes/hooks/useRouteComparison';
 
 export function SearchSidebar() {
   const { searchQuery, inputValue, updateSearch } = useSearch();
@@ -23,6 +25,17 @@ export function SearchSidebar() {
     setSortField,
     toggleDirection,
   } = useRouteSort(filteredRoutes);
+
+  const {
+    selectedIds,
+    comparisonRoutes,
+    canCompare,
+    isAtLimit,
+    toggleComparison,
+    clearComparison,
+  } = useRouteComparison(sortedRoutes);
+
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   const hasActiveFilters = activeRequirements.length > 0 || searchQuery.trim().length > 0;
   const hasRoutes = filteredRoutes.length > 0;
@@ -43,20 +56,41 @@ export function SearchSidebar() {
         <RequirementGrid />
       </div>
 
-      <div className="mb-4">
-        <RouteSortDropdown
-          sortField={sortField}
-          sortDirection={sortDirection}
-          onFieldChange={setSortField}
-          onDirectionToggle={toggleDirection}
-          disabled={!hasRoutes}
-        />
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex-1">
+          <RouteSortDropdown
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onFieldChange={setSortField}
+            onDirectionToggle={toggleDirection}
+            disabled={!hasRoutes}
+          />
+        </div>
+        {canCompare && (
+          <button
+            onClick={() => setIsCompareModalOpen(true)}
+            className="flex items-center gap-2 py-2 px-4 bg-yellow-400 border-4 border-black font-black uppercase text-xs hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+          >
+            <GitCompare size={16} />
+            Compare ({selectedIds.length})
+          </button>
+        )}
       </div>
 
       <RouteList
         routes={sortedRoutes}
         selectedRouteId={selectedRoute?.id ?? null}
         onRouteSelect={selectRoute}
+        selectedForComparison={selectedIds}
+        onComparisonToggle={toggleComparison}
+        comparisonDisabled={isAtLimit}
+      />
+
+      <RouteComparison
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        routes={comparisonRoutes}
+        onClearSelection={clearComparison}
       />
     </aside>
   );
