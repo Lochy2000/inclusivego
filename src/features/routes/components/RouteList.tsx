@@ -2,7 +2,14 @@ import React from 'react';
 import { RouteCard } from './RouteCard';
 import type { RouteListProps } from '../types/route.types';
 
-export function RouteList({ routes, selectedRouteId, onRouteSelect }: RouteListProps) {
+export function RouteList({
+  routes,
+  selectedRouteId,
+  onRouteSelect,
+  selectedForComparison = [],
+  onComparisonToggle,
+  comparisonDisabled = false,
+}: RouteListProps) {
   const hasRoutes = routes.length > 0;
 
   return (
@@ -22,6 +29,9 @@ export function RouteList({ routes, selectedRouteId, onRouteSelect }: RouteListP
               route={route}
               active={selectedRouteId === route.id}
               onClick={() => onRouteSelect(route.id)}
+              isSelectedForComparison={selectedForComparison.includes(route.id)}
+              onComparisonToggle={onComparisonToggle}
+              comparisonDisabled={comparisonDisabled && !selectedForComparison.includes(route.id)}
             />
           ))}
         </div>
