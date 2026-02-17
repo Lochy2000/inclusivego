@@ -4,19 +4,26 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { FontSize, ContrastMode } from '@/types';
 import type { AccessibilityContextValue } from '../types/settings.types';
 import { DEFAULT_FONT_SIZE, DEFAULT_CONTRAST_MODE } from '@/lib/constants';
+import { getStorageItem, setStorageItem } from '@/lib/utils/localStorage';
 
 const AccessibilityContext = createContext<AccessibilityContextValue | undefined>(undefined);
 
 export function AccessibilityProvider({ children }: { children: React.ReactNode }) {
-  const [fontSize, setFontSizeState] = useState<FontSize>(DEFAULT_FONT_SIZE);
-  const [contrastMode, setContrastModeState] = useState<ContrastMode>(DEFAULT_CONTRAST_MODE);
+  const [fontSize, setFontSizeState] = useState<FontSize>(
+    () => getStorageItem<FontSize>('accessibility_fontSize', DEFAULT_FONT_SIZE)
+  );
+  const [contrastMode, setContrastModeState] = useState<ContrastMode>(
+    () => getStorageItem<ContrastMode>('accessibility_contrastMode', DEFAULT_CONTRAST_MODE)
+  );
 
   const setFontSize = useCallback((size: FontSize) => {
     setFontSizeState(size);
+    setStorageItem('accessibility_fontSize', size);
   }, []);
 
   const setContrastMode = useCallback((mode: ContrastMode) => {
     setContrastModeState(mode);
+    setStorageItem('accessibility_contrastMode', mode);
   }, []);
 
   return (
